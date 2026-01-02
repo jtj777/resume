@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethan - Senior Frontend Engineer Resume</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;600;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #0a192f;
+            --bg-secondary: rgba(17, 34, 64, 0.7);
+            --text-primary: #ccd6f6;
+            --text-bright: #fff;
+            --accent-cyan: #64ffda;
+            --accent-blue: #57cbff;
+            --font-main: 'Inter', sans-serif;
+            --font-mono: 'Fira Code', monospace;
+            --section-spacing: 80px
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            line-height: 1.7;
+            overflow-x: hidden
+        }
+
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            filter: blur(0.5px)
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 25px;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 50px
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: var(--text-bright);
+            font-weight: 800
+        }
+
+        h1 {
+            font-size: 3rem;
+            letter-spacing: -1px
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center
+        }
+
+        h2::before {
+            content: '<';
+            color: var(--accent-cyan);
+            font-family: var(--font-mono);
+            margin-right: 10px;
+            font-weight: normal
+        }
+
+        h2::after {
+            content: '/>';
+            color: var(--accent-cyan);
+            font-family: var(--font-mono);
+            margin-left: 10px;
+            font-weight: normal;
+            opacity: 0.5
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--accent-cyan);
+            position: relative;
+            transition: color 0.3s
+        }
+
+        a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background-color: var(--accent-cyan);
+            transition: width 0.3s ease-in-out
+        }
+
+        a:hover::after {
+            width: 100%
+        }
+
+        .highlight {
+            color: var(--accent-cyan);
+            font-family: var(--font-mono)
+        }
+
+        .mono-text {
+            font-family: var(--font-mono);
+            font-size: 0.9rem
+        }
+
+        .btn-print {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            z-index: 100;
+            background: transparent;
+            color: var(--accent-cyan);
+            border: 1px solid var(--accent-cyan);
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px)
+        }
+
+        .btn-print:hover {
+            background: rgba(100, 255, 218, 0.1);
+            box-shadow: 0 0 15px rgba(100, 255, 218, 0.3)
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 40px;
+            height: fit-content;
+            padding: 40px 25px;
+            background: rgba(17, 34, 64, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3)
+        }
+
+        .profile-header h1 {
+            margin-bottom: 10px
+        }
+
+        .typewriter-container {
+            display: inline-block
+        }
+
+        .typewriter {
+            font-family: var(--font-mono);
+            color: var(--accent-cyan);
+            font-size: 1.1rem;
+            border-right: 2px solid var(--accent-cyan);
+            white-space: nowrap;
+            overflow: hidden;
+            animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite
+        }
+
+        .contact-info {
+            margin-top: 40px;
+            font-family: var(--font-mono);
+            font-size: 0.9rem
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: var(--text-secondary)
+        }
+
+        .contact-item i {
+            color: var(--accent-cyan);
+            margin-right: 15px;
+            font-style: normal
+        }
+
+        .main-content {
+            padding-top: 50px;
+            padding-bottom: var(--section-spacing)
+        }
+
+        section {
+            margin-bottom: var(--section-spacing);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s cubic-bezier(0.645, 0.045, 0.355, 1)
+        }
+
+        section.visible {
+            opacity: 1;
+            transform: translateY(0)
+        }
+
+        #about>div {
+            background: var(--bg-secondary);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid rgba(100, 255, 218, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2)
+        }
+
+        .skills-category {
+            margin-bottom: 25px
+        }
+
+        .skills-category h3 {
+            font-size: 1.1rem;
+            color: var(--text-bright);
+            margin-bottom: 15px;
+            display: inline-block;
+            border-bottom: 2px solid rgba(100, 255, 218, 0.3)
+        }
+
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px
+        }
+
+        .tag {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            background-color: rgba(100, 255, 218, 0.05);
+            color: var(--accent-cyan);
+            padding: 8px 15px;
+            border-radius: 4px;
+            border: 1px solid rgba(100, 255, 218, 0.2);
+            transition: all 0.25s ease;
+            cursor: default
+        }
+
+        .tag:hover {
+            background-color: rgba(100, 255, 218, 0.15);
+            border-color: var(--accent-cyan);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(100, 255, 218, 0.2)
+        }
+
+        .tag.highlight-tag {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+            background-color: rgba(87, 203, 255, 0.05)
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 10px;
+            height: 95%;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--accent-cyan), transparent)
+        }
+
+        .job-card {
+            position: relative;
+            background-color: var(--bg-secondary);
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1)
+        }
+
+        .job-card:hover {
+            transform: translateX(10px) translateY(-5px);
+            box-shadow: 0 20px 40px -15px rgba(2, 12, 27, 0.7);
+            border-color: rgba(100, 255, 218, 0.4)
+        }
+
+        .job-card::before {
+            content: '';
+            position: absolute;
+            left: -36px;
+            top: 25px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--bg-main);
+            border: 3px solid var(--accent-cyan);
+            box-shadow: 0 0 10px var(--accent-cyan)
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 15px;
+            flex-wrap: wrap
+        }
+
+        .job-title {
+            font-size: 1.3rem;
+            color: var(--text-bright);
+            font-weight: 600
+        }
+
+        .company {
+            color: var(--accent-cyan);
+            font-family: var(--font-mono)
+        }
+
+        .job-duration {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--text-secondary)
+        }
+
+        .job-details ul {
+            list-style: none;
+            padding-left: 15px
+        }
+
+        .job-details li {
+            position: relative;
+            margin-bottom: 10px
+        }
+
+        .job-details li::before {
+            content: '▹';
+            position: absolute;
+            left: -20px;
+            color: var(--accent-cyan)
+        }
+
+        .project-block {
+            background: rgba(10, 25, 47, 0.6);
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            border-left: 3px solid var(--accent-cyan)
+        }
+
+        .project-title {
+            display: block;
+            font-weight: bold;
+            color: var(--text-bright);
+            margin-bottom: 8px
+        }
+
+        .edu-card,
+        .cert-card {
+            background-color: rgba(17, 34, 64, 0.5);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease
+        }
+
+        .cert-card::before {
+            content: '★';
+            color: var(--accent-cyan);
+            margin-right: 15px
+        }
+
+        @keyframes typing {
+            from {
+                width: 0
+            }
+
+            to {
+                width: 100%
+            }
+        }
+
+        @keyframes blink-caret {
+
+            from,
+            to {
+                border-color: transparent
+            }
+
+            50% {
+                border-color: var(--accent-cyan)
+            }
+        }
+
+        @media (max-width:900px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 30px
+            }
+
+            .sidebar {
+                position: relative;
+                top: 0;
+                padding-top: 0;
+                text-align: center
+            }
+
+            .contact-info {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 20px
+            }
+
+            .main-content {
+                padding-top: 20px
+            }
+
+            h1 {
+                font-size: 2.5rem
+            }
+
+            .timeline::before {
+                left: -10px
+            }
+
+            .timeline {
+                padding-left: 15px
+            }
+
+            .job-card::before {
+                left: -28px
+            }
+
+            .job-card:hover {
+                transform: none
+            }
+        }
+
+        @media print {
+            body {
+                background-color: #fff;
+                color: #333
+            }
+
+            #particle-canvas,
+            .btn-print {
+                display: none
+            }
+
+            .container {
+                display: block;
+                max-width: 100%;
+                padding: 0
+            }
+
+            .sidebar {
+                position: relative;
+                text-align: left;
+                padding-bottom: 20px;
+                border-bottom: 2px solid #eee
+            }
+
+            .typewriter {
+                border: none;
+                color: #333;
+                animation: none;
+                width: auto
+            }
+
+            h1,
+            h2,
+            h3,
+            .job-title,
+            .project-title {
+                color: #000
+            }
+
+            h2::before,
+            h2::after {
+                display: none
+            }
+
+            .company,
+            .highlight,
+            a {
+                color: #0056b3
+            }
+
+            .tag {
+                border: 1px solid #ccc;
+                background: #eee;
+                color: #333
+            }
+
+            .job-card,
+            .edu-card,
+            .cert-card {
+                background: none;
+                border: none;
+                padding: 0;
+                margin-bottom: 30px;
+                box-shadow: none
+            }
+
+            .timeline::before,
+            .job-card::before {
+                display: none
+            }
+
+            .timeline {
+                padding-left: 0
+            }
+
+            .job-details li::before {
+                color: #333
+            }
+
+            .project-block {
+                background: none;
+                border-left: 3px solid #ccc;
+                padding-left: 15px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="particle-canvas"></canvas>
+
+    <div class="container">
+        <aside class="sidebar js-scroll-fade">
+            <header class="profile-header">
+                <h1>Ethan</h1>
+                <div class="typewriter-container">
+                    <div class="typewriter">Senior Software Engineer.</div>
+                </div>
+            </header>
+
+            <div class="contact-info">
+                <div class="contact-item">
+                    <i>📍</i> 高雄市
+                </div>
+                <div class="contact-item" style="margin-top: 20px; color: var(--accent-cyan);">
+                    期望待遇：月薪 45,000 元以上
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+
+            <section id="about" class="js-scroll-fade">
+                <h2>About Me</h2>
+                <div style="font-size: 1.05rem;">
+                    <p>擁有近 10 年軟體開發經驗的資深工程師，專精於 <span class="highlight">C# (.NET)</span>、<span
+                            class="highlight">Java</span> 與 <span class="highlight">Python</span>。職涯橫跨系統整合
+                        (SI)、半導體製造與電子商務領域。</p>
+                    <br>
+                    <p>具備從底層硬體通訊 (Socket/Modbus) 到上層 Web 應用 (RESTful API/MVC) 的全端開發能力。近年專注於自動化流程導入，善於結合開發經驗與測試邏輯，利用
+                        Python 建立自動化測試框架，有效提升產品穩定度。</p>
+                    <br>
+                    <p>目前尋求高雄地區軟體開發職缺，期能運用系統架構設計與硬體整合經驗，為團隊創造價值。</p>
+                </div>
+            </section>
+
+            <section id="skills" class="js-scroll-fade">
+                <h2>Tech Stack</h2>
+
+                <div class="skills-category">
+                    <h3>後端開發 Backend</h3>
+                    <div class="skill-tags">
+                        <span class="tag">C# (.NET Core/Framework/WinForm)</span>
+                        <span class="tag">Java (Spring Boot)</span>
+                        <span class="tag">Python (Flask, Scripting)</span>
+                    </div>
+                </div>
+
+                <div class="skills-category">
+                    <h3>前端與通訊 Frontend & API</h3>
+                    <div class="skill-tags">
+                        <span class="tag highlight-tag">JavaScript (ES6+)</span>
+                        <span class="tag">HTML5/CSS3</span>
+                        <span class="tag">jQuery</span>
+                        <span class="tag">Bootstrap</span>
+                        <span class="tag">WebAPI (RESTful)</span>
+                        <span class="tag">Socket</span>
+                        <span class="tag">Modbus</span>
+                        <span class="tag">MSMQ</span>
+                    </div>
+                </div>
+
+                <div class="skills-category">
+                    <h3>資料庫與工具 DB & Tools</h3>
+                    <div class="skill-tags">
+                        <span class="tag">MS SQL</span>
+                        <span class="tag">MySQL</span>
+                        <span class="tag">Oracle</span>
+                        <span class="tag">MongoDB</span>
+                        <span class="tag">Git (GitHub/GitLab)</span>
+                        <span class="tag">SVN</span>
+                        <span class="tag">Docker</span>
+                        <span class="tag">Redmine</span>
+                    </div>
+                </div>
+            </section>
+
+            <section id="experience" class="js-scroll-fade">
+                <h2>Experience</h2>
+                <div class="timeline">
+
+                    <div class="job-card">
+                        <div class="job-header">
+                            <div>
+                                <span class="job-title">軟韌體測試工程師</span>
+                                <a href="https://www.e-scs.com.tw/chi_bg5/product/index.html" target="_blank"
+                                    rel="noopener noreferrer" class="company"> @ 宇恒電子有限公司</a>
+                            </div>
+                            <span class="job-duration mono-text">2025/04 – 至今 (在職中)</span>
+                        </div>
+                        <div class="job-details">
+                            <ul>
+                                <li><strong>Python 自動化測試導入：</strong>運用 Python 撰寫自動化腳本，取代重複性手動測試，提升回歸測試效率。</li>
+                                <li><strong>Bug 分析與追蹤：</strong>使用 Redmine 進行問題追蹤與管理，協助開發團隊快速定位韌體與軟體的錯誤。</li>
+                                <li><strong>Web 測試：</strong>負責後臺網頁功能驗證與壓力測試。</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="job-card">
+                        <div class="job-header">
+                            <div>
+                                <span class="job-title">軟體工程師</span>
+                                <a href="https://www.footprintku.com/" target="_blank" rel="noopener noreferrer"
+                                    class="company"> @ 富比庫股份有限公司</a>
+                            </div>
+                            <span class="job-duration mono-text">2025/02 – 2025/04</span>
+                        </div>
+                        <div class="job-details">
+                            <ul>
+                                <li>參與 Log 模組的優化。</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="job-card">
+                        <div class="job-header">
+                            <div>
+                                <span class="job-title">程式工程師</span> 星拓資訊科技有限公司
+                            </div>
+                            <span class="job-duration mono-text">2023/03 – 2024/11 (1年9個月)</span>
+                        </div>
+                        <div class="job-details">
+                            <div class="project-block">
+                                <span class="project-title"><span class="mono-text">[關鍵專案]</span> 外送 APP 平台串接整合</span>
+                                <ul>
+                                    <li><strong>第三方 API 串接：</strong>整合 Foodpanda 外送平台訂單，實現訂單自動接收與即時狀態更新。</li>
+                                    <li><strong>後端系統開發：</strong>使用 Java 維護訂單系統，維護管理外部系統對接。</li>
+                                    <li><strong>系統優化：</strong>優化資料庫(Mongodb)查詢效能，確保高併發訂單下的系統穩定性。</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="job-card">
+                        <div class="job-header">
+                            <div>
+                                <span class="job-title">資訊工程師</span>
+                                <a href="https://www.sndaits.com/" target="_blank" rel="noopener noreferrer"
+                                    class="company"> @ 盛大資訊股份有限公司</a>
+                            </div>
+                            <span class="job-duration mono-text">2018/07 – 2022/01 (3年7個月)</span>
+                        </div>
+                        <div class="job-details">
+                            <p style="margin-bottom: 15px; color: var(--text-secondary);">專注於產線自動化系統 (C# WinForm)
+                                開發，與對接硬體設備。</p>
+
+                            <div class="project-block">
+                                <span class="project-title">專案三：樣品測試自動化系統</span>
+                                <ul>
+                                    <li>設計並實作樣品測試流程，自動化管理各站點測量資料。</li>
+                                    <li>前端即時顯示樣品狀態與測試數據，提升產線人員判讀效率。</li>
+                                </ul>
+                            </div>
+                            <div class="project-block" style="border-color: var(--accent-blue);">
+                                <span class="project-title">專案二：產品貼標自動化與手臂整合</span>
+                                <ul>
+                                    <li>透過 <span class="highlight">Socket</span> 與機械手臂通訊，控制貼標位置與時機。</li>
+                                    <li>同時管理多台標籤機狀態，處理 ZPL 列印格式。</li>
+                                </ul>
+                            </div>
+                            <div class="project-block">
+                                <span class="project-title">專案一：產線程控系統</span>
+                                <ul>
+                                    <li>後端通訊：開發 Socket 通訊模組處理多設備連接，實現即時數據採集與指令控制。</li>
+                                    <li>邏輯核心：實作產線狀態機，管理生產流程與停機狀況處理。</li>
+                                    <li>前端呈現：調整 HMI 監控畫面，提升產線狀態的視覺化呈現效果。</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="job-card" style="padding: 15px 25px;">
+                        <div class="job-header" style="margin-bottom: 5px;">
+                            <div><span class="job-title" style="font-size: 1.1rem;">助理工程師</span> <a
+                                    href="https://www.ose.com.tw/" target="_blank" rel="noopener noreferrer"
+                                    class="company">@ 華泰電子</a></div>
+                            <span class="job-duration mono-text">2017 - 2018</span>
+                        </div>
+                        <div class="job-details" style="font-size: 0.9rem;">
+                            <ul>
+                                <li>開發機台 Log 管理工具。</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="job-card" style="padding: 15px 25px;">
+                        <div class="job-header" style="margin-bottom: 5px;">
+                            <div><span class="job-title" style="font-size: 1.1rem;">軟體工程師</span> <a
+                                    href="https://www.pilotgaea.com.tw/" target="_blank" rel="noopener noreferrer"
+                                    class="company">@ 藏識科技</a></div>
+                            <span class="job-duration mono-text">2015 - 2017</span>
+                        </div>
+                        <div class="job-details">
+                            <div class="project-block">
+                                <span class="project-title">專案：住宅不動產地圖、多目標地籍系統</span>
+                                <ul>
+                                    <li>GIS 圖資整合開發：整合政府地籍資料與商業不動產刊登數據，開發基於地圖的視覺化查詢系統，讓使用者能直觀查看地段資訊。</li>
+                                    <li>全端功能實作：負責從後端資料庫到前端地圖互動功能的開發，實現即時的地籍查詢與物件篩選。</li>
+                                    <li>資料庫效能優化：撰寫高效能 SQL 處理大量地籍圖資的關聯查詢 (Join)。</li>
+                                    <li>使用者體驗改善：調整前端地圖操作邏輯與 UI 動線，提升易用性。</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <section id="education" class="js-scroll-fade">
+                <h2>Education & Certifications</h2>
+                <div class="edu-card">
+                    <div>
+                        <strong>國立屏東大學</strong>
+                        <div class="mono-text" style="color: var(--accent-cyan); margin-top: 5px;">資訊工程系 學士</div>
+                    </div>
+                    <span class="mono-text">2009 – 2013</span>
+                </div>
+                <div style="margin-top: 25px;">
+                    <div class="cert-card">乙級電腦硬體裝修技術士</div>
+                    <div class="cert-card">丙級網路架設技術士</div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        const scrollElements = document.querySelectorAll(".js-scroll-fade");
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("visible");
+                }
+            });
+        }, { threshold: 0.1 });
+
+        scrollElements.forEach((el) => observer.observe(el));
+
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particlesArray;
+        let mouse = { x: null, y: null, radius: (canvas.height / 80) * (canvas.width / 80) };
+
+        window.addEventListener('mousemove', function (event) {
+            mouse.x = event.x;
+            mouse.y = event.y;
+        });
+        class Particle {
+            constructor(x, y, directionX, directionY, size, color) {
+                this.x = x;
+                this.y = y;
+                this.directionX = directionX;
+                this.directionY = directionY;
+                this.size = size;
+                this.color = color;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                ctx.fillStyle = 'rgba(100, 255, 218, 0.3)';
+                ctx.fill();
+            }
+            update() {
+                if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX;
+                if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY;
+
+                let dx = mouse.x - this.x;
+                let dy = mouse.y - this.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < mouse.radius + this.size) {
+                    if (mouse.x < this.x && this.x < canvas.width - this.size * 10) this.x += 3;
+                    if (mouse.x > this.x && this.x > this.size * 10) this.x -= 3;
+                    if (mouse.y < this.y && this.y < canvas.height - this.size * 10) this.y += 3;
+                    if (mouse.y > this.y && this.y > this.size * 10) this.y -= 3;
+                }
+
+                this.x += this.directionX * 0.5;
+                this.y += this.directionY * 0.5;
+                this.draw();
+            }
+        }
+
+        function init() {
+            particlesArray = [];
+            let numberOfParticles = (canvas.height * canvas.width) / 15000;
+            for (let i = 0; i < numberOfParticles; i++) {
+                let size = (Math.random() * 3) + 1;
+                let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+                let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+                let directionX = (Math.random() * 2) - 1;
+                let directionY = (Math.random() * 2) - 1;
+                let color = '#64ffda';
+                particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, innerWidth, innerHeight);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+            }
+            connect();
+        }
+
+        function connect() {
+            let opacityValue = 1;
+            for (let a = 0; a < particlesArray.length; a++) {
+                for (let b = a; b < particlesArray.length; b++) {
+                    let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x))
+                        + ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+                    if (distance < (canvas.width / 7) * (canvas.height / 7)) {
+                        opacityValue = 1 - (distance / 15000);
+                        ctx.strokeStyle = 'rgba(100, 255, 218,' + opacityValue / 4 + ')';
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                        ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        window.addEventListener('resize', function () {
+            canvas.width = innerWidth;
+            canvas.height = innerHeight;
+            mouse.radius = ((canvas.height / 80) * (canvas.height / 80));
+            init();
+        });
+
+        window.addEventListener('mouseout', function () {
+            mouse.x = null;
+            mouse.y = null;
+        })
+
+        init();
+        animate();
+    </script>
+</body>
+
+</html>
